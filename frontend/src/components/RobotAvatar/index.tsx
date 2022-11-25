@@ -5,10 +5,12 @@ import { useTranslation } from 'react-i18next';
 import { SendReceiveIcon } from '../Icons';
 import { apiClient } from '../../services/api';
 import placeholder from './placeholder.json';
+import { PatternSharp } from '@mui/icons-material';
 
 interface Props {
   nickname: string | undefined;
   smooth?: boolean;
+  coordinator?: boolean;
   flipHorizontally?: boolean;
   style?: object;
   imageStyle?: object;
@@ -33,20 +35,20 @@ const RobotAvatar: React.FC<Props> = ({
   avatarClass = 'flippedSmallAvatar',
   imageStyle = {},
   onLoad = () => {},
+  coordinator = false,
   baseUrl,
 }) => {
   const { t } = useTranslation();
   const theme = useTheme();
   const [avatarSrc, setAvatarSrc] = useState<string>();
+  const path = coordinator ? '/static/federation/' : '/static/assets/avatars/';
 
   useEffect(() => {
     if (nickname != undefined) {
       if (window.NativeRobosats === undefined) {
-        setAvatarSrc(baseUrl + '/static/assets/avatars/' + nickname + '.png');
+        setAvatarSrc(baseUrl + path + nickname + '.png');
       } else {
-        apiClient
-          .fileImageUrl(baseUrl, '/static/assets/avatars/' + nickname + '.png')
-          .then(setAvatarSrc);
+        apiClient.fileImageUrl(baseUrl, path + nickname + '.png').then(setAvatarSrc);
       }
     }
   }, [nickname]);

@@ -131,9 +131,11 @@ const Main = ({ settings, setSettings }: MainProps): JSX.Element => {
     }
 
     if (baseUrl != '') {
+      setBook({ ...book, orders: [] });
       fetchBook();
       fetchLimits();
     }
+
     return () => {
       if (typeof window !== undefined) {
         window.removeEventListener('resize', onResize);
@@ -146,10 +148,7 @@ const Main = ({ settings, setSettings }: MainProps): JSX.Element => {
     if (window.NativeRobosats === undefined) {
       host = getHost();
     } else {
-      host =
-        settings.network === 'mainnet'
-          ? coordinators[0].mainnetOnion
-          : coordinators[0].testnetOnion;
+      host = coordinators[0][`${settings.network}Onion`];
     }
     setBaseUrl(`http://${host}`);
   }, [settings.network]);
@@ -181,19 +180,53 @@ const Main = ({ settings, setSettings }: MainProps): JSX.Element => {
     return await data;
   };
 
-  const fetchInfo = function () {
-    setInfo({ ...info, loading: true });
-    apiClient.get(baseUrl, '/api/info/').then((data: Info) => {
-      const versionInfo: any = checkVer(data.version.major, data.version.minor, data.version.patch);
-      setInfo({
-        ...data,
-        openUpdateClient: versionInfo.updateAvailable,
-        coordinatorVersion: versionInfo.coordinatorVersion,
-        clientVersion: versionInfo.clientVersion,
-        loading: false,
-      });
-    });
-  };
+  // fetchInfo for many coordinators
+  // const fetchInfo = function (setNetwork?: boolean) {
+  //   const newCoordinators = coordinators.map(coordinator => {
+  //       if (coordinator.enabled === true) {
+  //         const baseUrl = coordinator[`${settings.network}Clearnet`]
+  //         apiClient.get(baseUrl, '/api/info/').then((data: Info) => {
+  //           console.log(data)
+  //           let info:Info
+  //           const versionInfo: any = checkVer(data.version.major, data.version.minor, data.version.patch);
+  //           info = {
+  //             ...data,
+  //             openUpdateClient: versionInfo.updateAvailable,
+  //             coordinatorVersion: versionInfo.coordinatorVersion,
+  //             clientVersion: versionInfo.clientVersion,
+  //             loading: false,
+  //           };
+  //           setInfo(info)
+  //           return {...coordinator, info}
+  //         });
+  //         return coordinator;
+  //       }
+  //     });
+  //   setCoordinators(newCoordinators)
+  // };
+
+  // const fetchInfo = function (setNetwork?: boolean) {
+  //   setInfo({ ...info, loading: true });
+  //   apiClient.get(baseUrl, '/api/info/').then((data: Info) => {
+  //     const versionInfo: any = checkVer(data.version.major, data.version.minor, data.version.patch);
+  //     const info = {
+  //       ...data,
+  //       openUpdateClient: versionInfo.updateAvailable,
+  //       coordinatorVersion: versionInfo.coordinatorVersion,
+  //       clientVersion: versionInfo.clientVersion,
+  //       loading: false,
+  //     };
+  //     setInfo(info);
+
+  //     // Cheap set coordinators info given that there is only one coordinator atm
+  //     setCoordinators(coordinators.map(coordinator => {return {...coordinator, info}}))
+
+  //     // Sets Setting network from coordinator API param if accessing via web
+  //     if (setNetwork) {
+  //       setSettings({ ...settings, network: data.network });
+  //     }
+  //   });
+  // };
 
   useEffect(() => {
     if (open.stats || open.coordinator || info.coordinatorVersion == 'v?.?.?') {
@@ -459,8 +492,11 @@ const Main = ({ settings, setSettings }: MainProps): JSX.Element => {
                   fav={fav}
                   setFav={setFav}
                   settings={settings}
+                  coordinators={coordinators}
+                  setCoordinators={setCoordinators}
                   setSettings={setSettings}
                   windowSize={{ ...windowSize, height: windowSize.height - navbarHeight }}
+                  baseUrl={baseUrl}
                 />
               </div>
             </Slide>

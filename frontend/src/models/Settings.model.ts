@@ -47,7 +47,7 @@ class BaseSettings {
   public fontSize: number = 14;
   public language?: Language;
   public freezeViewports: boolean = false;
-  public network: 'mainnet' | 'testnet' | undefined = undefined;
+  public network: 'mainnet' | 'testnet' = 'mainnet';
   public coordinator: Coordinator | undefined = undefined;
   public host?: string;
   public unsafeClient: boolean = false;

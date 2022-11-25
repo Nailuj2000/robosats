@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Info, Robot } from '../../models';
 import {
   CommunityDialog,
-  CoordinatorSummaryDialog,
+  ExchangeSummaryDialog,
   InfoDialog,
   LearnDialog,
   ProfileDialog,
@@ -69,7 +69,7 @@ const MainDialogs = ({
         open={open.community}
         onClose={() => setOpen({ ...open, community: false })}
       />
-      <CoordinatorSummaryDialog
+      <ExchangeSummaryDialog
         open={open.coordinator}
         onClose={() => setOpen({ ...open, coordinator: false })}
         info={info}

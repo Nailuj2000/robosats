@@ -35,9 +35,9 @@ interface SettingsFormProps {
   setFav: (state: Favorites) => void;
   settings: Settings;
   setSettings: (state: Settings) => void;
-  showNetwork?: boolean;
 }
 
+<<<<<<< HEAD
 const SettingsForm = ({
   dense = false,
   fav,
@@ -46,6 +46,9 @@ const SettingsForm = ({
   setSettings,
   showNetwork = false,
 }: SettingsFormProps): JSX.Element => {
+=======
+const SettingsForm = ({ dense = false, settings, setSettings }: SettingsFormProps): JSX.Element => {
+>>>>>>> Add coordinator table and coordinator summary dialog
   const theme = useTheme();
   const { t } = useTranslation();
   const fontSizes = [
@@ -147,6 +150,7 @@ const SettingsForm = ({
             />
           </ListItem>
 
+          
           <ListItem>
             <ListItemIcon>
               <AccountBalance />
@@ -169,30 +173,26 @@ const SettingsForm = ({
             </ToggleButtonGroup>
           </ListItem>
 
-          {showNetwork ? (
-            <ListItem>
-              <ListItemIcon>
-                <Link />
-              </ListItemIcon>
-              <ToggleButtonGroup
-                exclusive={true}
-                value={settings.network}
-                onChange={(e, network) => {
-                  setSettings({ ...settings, network });
-                  systemClient.setItem('settings_network', network);
-                }}
-              >
-                <ToggleButton value='mainnet' color='primary'>
-                  {t('Mainnet')}
-                </ToggleButton>
-                <ToggleButton value='testnet' color='secondary'>
-                  {t('Testnet')}
-                </ToggleButton>
-              </ToggleButtonGroup>
-            </ListItem>
-          ) : (
-            <></>
-          )}
+          <ListItem>
+            <ListItemIcon>
+              <Link />
+            </ListItemIcon>
+            <ToggleButtonGroup
+              exclusive={true}
+              value={settings.network}
+              onChange={(e, network) => {
+                setSettings({ ...settings, network });
+                systemClient.setItem('settings_network', network);
+              }}
+            >
+              <ToggleButton value='mainnet' color='primary'>
+                {t('Mainnet')}
+              </ToggleButton>
+              <ToggleButton value='testnet' color='secondary'>
+                {t('Testnet')}
+              </ToggleButton>
+            </ToggleButtonGroup>
+          </ListItem>
         </List>
       </Grid>
     </Grid>
