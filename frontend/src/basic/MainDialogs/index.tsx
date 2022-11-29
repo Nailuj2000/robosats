@@ -6,7 +6,7 @@ import {
   InfoDialog,
   LearnDialog,
   ProfileDialog,
-  StatsDialog,
+  AppInfoDialog,
   UpdateClientDialog,
 } from '../../components/Dialogs';
 import { Page } from '../NavBar';
@@ -74,7 +74,7 @@ const MainDialogs = ({
         onClose={() => setOpen({ ...open, coordinator: false })}
         info={info}
       />
-      <StatsDialog
+      <AppInfoDialog
         open={open.stats}
         onClose={() => setOpen({ ...open, stats: false })}
         info={info}
