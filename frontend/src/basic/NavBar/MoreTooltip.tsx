@@ -21,19 +21,12 @@ const StyledTooltip = styled(({ className, ...props }: TooltipProps) => (
 
 interface MoreTooltipProps {
   open: OpenDialogs;
-  nickname: string | null;
   setOpen: (state: OpenDialogs) => void;
   closeAll: OpenDialogs;
   children: JSX.Element;
 }
 
-const MoreTooltip = ({
-  open,
-  setOpen,
-  closeAll,
-  nickname,
-  children,
-}: MoreTooltipProps): JSX.Element => {
+const MoreTooltip = ({ open, setOpen, closeAll, children }: MoreTooltipProps): JSX.Element => {
   const { t } = useTranslation();
   const theme = useTheme();
   return (
@@ -91,14 +84,12 @@ const MoreTooltip = ({
           </Grid>
 
           <Grid item sx={{ position: 'relative', right: '0.4em' }}>
-            <Tooltip enterTouchDelay={250} placement='left' title={t('Coordinator summary')}>
+            <Tooltip enterTouchDelay={250} placement='left' title={t('Exchange summary')}>
               <IconButton
                 sx={{
-                  color: open.coordinator
-                    ? theme.palette.primary.main
-                    : theme.palette.text.secondary,
+                  color: open.exchange ? theme.palette.primary.main : theme.palette.text.secondary,
                 }}
-                onClick={() => setOpen({ ...closeAll, coordinator: !open.coordinator })}
+                onClick={() => setOpen({ ...closeAll, exchange: !open.exchange })}
               >
                 <PriceChange />
               </IconButton>
@@ -106,12 +97,12 @@ const MoreTooltip = ({
           </Grid>
 
           <Grid item sx={{ position: 'relative', right: '0.4em' }}>
-            <Tooltip enterTouchDelay={250} placement='left' title={t('Stats for nerds')}>
+            <Tooltip enterTouchDelay={250} placement='left' title={t('client for nerds')}>
               <IconButton
                 sx={{
-                  color: open.stats ? theme.palette.primary.main : theme.palette.text.secondary,
+                  color: open.client ? theme.palette.primary.main : theme.palette.text.secondary,
                 }}
-                onClick={() => setOpen({ ...closeAll, stats: !open.stats })}
+                onClick={() => setOpen({ ...closeAll, client: !open.client })}
               >
                 <BubbleChart />
               </IconButton>

@@ -11,8 +11,10 @@ interface SettingsPageProps {
   settings: Settings;
   setSettings: (state: Settings) => void;
   windowSize: { width: number; height: number };
-  coordinators: Coordinator[];
-  setCoordinators: (state: Coordinator[]) => void;
+  federation: Coordinator[];
+  setFederation: (state: Coordinator[]) => void;
+  setFocusedCoordinator: (state: number) => void;
+  openCoordinator: () => void;
   baseUrl: string;
 }
 
@@ -22,8 +24,10 @@ const SettingsPage = ({
   settings,
   setSettings,
   windowSize,
-  coordinators,
-  setCoordinators,
+  federation,
+  setFederation,
+  setFocusedCoordinator,
+  openCoordinator,
   baseUrl,
 }: SettingsPageProps): JSX.Element => {
   const { t } = useTranslation();
@@ -41,8 +45,10 @@ const SettingsPage = ({
         </Grid>
         <Grid item>
           <FederationTable
-            coordinators={coordinators}
-            setCoordinators={setCoordinators}
+            federation={federation}
+            setFederation={setFederation}
+            setFocusedCoordinator={setFocusedCoordinator}
+            openCoordinator={openCoordinator}
             baseUrl={baseUrl}
             maxHeight={10}
             network={settings.network}

@@ -29,7 +29,7 @@ import { apiClient } from '../services/api';
 import { checkVer, getHost } from '../utils';
 import { sha256 } from 'js-sha256';
 
-import defaultCoordinators from '../../static/federation.json';
+import defaultFederation from '../../static/federation.json';
 import { useTranslation } from 'react-i18next';
 import Notifications from '../components/Notifications';
 
@@ -87,7 +87,8 @@ const Main = ({ settings, setSettings }: MainProps): JSX.Element => {
   const [robot, setRobot] = useState<Robot>(new Robot());
   const [maker, setMaker] = useState<Maker>(defaultMaker);
   const [info, setInfo] = useState<Info>(defaultInfo);
-  const [coordinators, setCoordinators] = useState<Coordinator[]>(defaultCoordinators);
+  const [federation, setFederation] = useState<Coordinator[]>(defaultFederation);
+  const [focusedCoordinator, setFocusedCoordinator] = useState<number>(0);
   const [baseUrl, setBaseUrl] = useState<string>('');
   const [fav, setFav] = useState<Favorites>({ type: null, mode: 'fiat', currency: 0 });
 
@@ -115,7 +116,8 @@ const Main = ({ settings, setSettings }: MainProps): JSX.Element => {
     community: false,
     info: false,
     coordinator: false,
-    stats: false,
+    exchange: false,
+    client: false,
     update: false,
     profile: false,
   };
@@ -148,7 +150,7 @@ const Main = ({ settings, setSettings }: MainProps): JSX.Element => {
     if (window.NativeRobosats === undefined) {
       host = getHost();
     } else {
-      host = coordinators[0][`${settings.network}Onion`];
+      host = federation[0][`${settings.network}Onion`];
     }
     setBaseUrl(`http://${host}`);
   }, [settings.network]);
@@ -181,7 +183,7 @@ const Main = ({ settings, setSettings }: MainProps): JSX.Element => {
   };
 
   const fetchInfo = function (setNetwork?: boolean) {
-    coordinators.map((coordinator, i) => {
+    federation.map((coordinator, i) => {
       if (coordinator.enabled === true) {
         const baseUrl = coordinator[`mainnetClearnet`];
         apiClient
@@ -201,45 +203,26 @@ const Main = ({ settings, setSettings }: MainProps): JSX.Element => {
               loading: false,
             };
             setInfo(info);
-            setCoordinators((coordinators) => {
-              coordinators[i].info = info;
-              return coordinators;
+            setFederation((federation) => {
+              federation[i].info = info;
+              return federation;
             });
           })
           .finally(() => {
-            setCoordinators((coordinators) => {
-              coordinators[i].loadingInfo = false;
-              return coordinators;
+            setFederation((federation) => {
+              federation[i].loadingInfo = false;
+              return federation;
             });
           });
       }
     });
   };
 
-  // const fetchInfo = function () {
-  //   setInfo({ ...info, loading: true });
-  //   apiClient.get(baseUrl, '/api/info/').then((data: Info) => {
-  //     const versionInfo: any = checkVer(data.version.major, data.version.minor, data.version.patch);
-  //     const info = {
-  //       ...data,
-  //       openUpdateClient: versionInfo.updateAvailable,
-  //       coordinatorVersion: versionInfo.coordinatorVersion,
-  //       clientVersion: versionInfo.clientVersion,
-  //       loading: false,
-  //     };
-  //     setInfo(info);
-  //     const newCoordinators = coordinators.map((coordinator) => {
-  //       return { ...coordinator, info };
-  //     });
-  //     setCoordinators(newCoordinators);
-  //   });
-  // };
-
   useEffect(() => {
-    if (open.stats || open.coordinator || info.coordinatorVersion == 'v?.?.?') {
+    if (open.exchange || info.coordinatorVersion == 'v?.?.?') {
       fetchInfo();
     }
-  }, [open.stats, open.coordinator]);
+  }, [open.exchange]);
 
   useEffect(() => {
     // Sets Setting network from coordinator API param if accessing via web
@@ -499,9 +482,11 @@ const Main = ({ settings, setSettings }: MainProps): JSX.Element => {
                   fav={fav}
                   setFav={setFav}
                   settings={settings}
-                  coordinators={coordinators}
-                  setCoordinators={setCoordinators}
+                  federation={federation}
+                  setFederation={setFederation}
+                  setFocusedCoordinator={setFocusedCoordinator}
                   setSettings={setSettings}
+                  openCoordinator={() => setOpen({ ...open, coordinator: true })}
                   windowSize={{ ...windowSize, height: windowSize.height - navbarHeight }}
                   baseUrl={baseUrl}
                 />
@@ -537,6 +522,9 @@ const Main = ({ settings, setSettings }: MainProps): JSX.Element => {
         robot={robot}
         closeAll={closeAll}
         baseUrl={baseUrl}
+        federation={federation}
+        focusedCoordinator={focusedCoordinator}
+        network={settings.network}
       />
     </Router>
   );

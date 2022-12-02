@@ -1,12 +1,13 @@
 import React, { useEffect } from 'react';
-import { Info, Robot } from '../../models';
+import { Coordinator, Info, Robot, Settings } from '../../models';
 import {
   CommunityDialog,
-  ExchangeSummaryDialog,
-  InfoDialog,
+  ExchangeDialog,
+  CoordinatorDialog,
+  AboutDialog,
   LearnDialog,
   ProfileDialog,
-  AppInfoDialog,
+  ClientDialog,
   UpdateClientDialog,
 } from '../../components/Dialogs';
 import { Page } from '../NavBar';
@@ -17,7 +18,8 @@ export interface OpenDialogs {
   community: boolean;
   info: boolean;
   coordinator: boolean;
-  stats: boolean;
+  exchange: boolean;
+  client: boolean;
   update: boolean;
   profile: boolean; // temporary until new Robot Page is ready
 }
@@ -32,6 +34,9 @@ interface MainDialogsProps {
   setCurrentOrder: (state: number) => void;
   closeAll: OpenDialogs;
   baseUrl: string;
+  network: 'mainnet' | 'testnet' | undefined;
+  federation: Coordinator[];
+  focusedCoordinator: number;
 }
 
 const MainDialogs = ({
@@ -44,6 +49,9 @@ const MainDialogs = ({
   setPage,
   setCurrentOrder,
   baseUrl,
+  network,
+  federation,
+  focusedCoordinator,
 }: MainDialogsProps): JSX.Element => {
   useEffect(() => {
     if (info.openUpdateClient) {
@@ -59,7 +67,7 @@ const MainDialogs = ({
         clientVersion={info.clientVersion}
         onClose={() => setOpen({ ...open, update: false })}
       />
-      <InfoDialog
+      <AboutDialog
         open={open.info}
         maxAmount='4,000,000'
         onClose={() => setOpen({ ...open, info: false })}
@@ -69,16 +77,13 @@ const MainDialogs = ({
         open={open.community}
         onClose={() => setOpen({ ...open, community: false })}
       />
-      <ExchangeSummaryDialog
-        open={open.coordinator}
-        onClose={() => setOpen({ ...open, coordinator: false })}
+      <ExchangeDialog
+        federation={federation}
+        open={open.exchange}
+        onClose={() => setOpen({ ...open, exchange: false })}
         info={info}
       />
-      <AppInfoDialog
-        open={open.stats}
-        onClose={() => setOpen({ ...open, stats: false })}
-        info={info}
-      />
+      <ClientDialog open={open.client} onClose={() => setOpen({ ...open, client: false })} />
       <ProfileDialog
         open={open.profile}
         baseUrl={baseUrl}
@@ -87,6 +92,13 @@ const MainDialogs = ({
         setRobot={setRobot}
         setPage={setPage}
         setCurrentOrder={setCurrentOrder}
+      />
+      <CoordinatorDialog
+        open={open.coordinator}
+        network={network}
+        onClose={() => setOpen({ ...open, coordinator: false })}
+        coordinator={federation[focusedCoordinator]}
+        baseUrl={baseUrl}
       />
     </>
   );
