@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Grid, ButtonGroup, Dialog, Box } from '@mui/material';
 import { useHistory } from 'react-router-dom';
@@ -7,51 +7,37 @@ import DepthChart from '../../components/Charts/DepthChart';
 import { NoRobotDialog } from '../../components/Dialogs';
 import MakerForm from '../../components/MakerForm';
 import BookTable from '../../components/BookTable';
-import { Page } from '../NavBar';
-import { Book, Favorites, LimitList, Maker } from '../../models';
 
 // Icons
 import { BarChart, FormatListBulleted } from '@mui/icons-material';
+import { AppContext, AppContextProps } from '../../contexts/AppContext';
 
 interface BookPageProps {
-  book: Book;
-  limits: { list: LimitList; loading: boolean };
-  fetchLimits: () => void;
-  fav: Favorites;
-  setFav: (state: Favorites) => void;
-  onViewOrder: () => void;
-  fetchBook: () => void;
-  clearOrder: () => void;
-  windowSize: { width: number; height: number };
-  lastDayPremium: number;
-  maker: Maker;
-  setMaker: (state: Maker) => void;
   hasRobot: boolean;
-  setPage: (state: Page) => void;
-  setCurrentOrder: (state: number) => void;
-  baseUrl: string;
 }
 
-const BookPage = ({
-  lastDayPremium = 0,
-  limits,
-  book = { orders: [], loading: true },
-  fetchBook,
-  fetchLimits,
-  clearOrder,
-  fav,
-  setFav,
-  onViewOrder,
-  maker,
-  setMaker,
-  windowSize,
-  hasRobot = false,
-  setPage = () => null,
-  setCurrentOrder = () => null,
-  baseUrl,
-}: BookPageProps): JSX.Element => {
+const BookPage = ({ hasRobot = false }: BookPageProps): JSX.Element => {
   const { t } = useTranslation();
   const history = useHistory();
+  const {
+    limits,
+    book,
+    fetchBook,
+    fetchLimits,
+    clearOrder,
+    fav,
+    setFav,
+    setDelay,
+    info,
+    setOrder,
+    maker,
+    setMaker,
+    windowSize,
+    setPage,
+    setCurrentOrder,
+    baseUrl,
+  } = useContext<AppContextProps>(AppContext);
+
   const [view, setView] = useState<'list' | 'depth'>('list');
   const [openMaker, setOpenMaker] = useState<boolean>(false);
   const [openNoRobot, setOpenNoRobot] = useState<boolean>(false);
@@ -62,11 +48,7 @@ const BookPage = ({
   const chartWidthEm = width - maxBookTableWidth;
 
   useEffect(() => {
-    if (book.orders.length < 1) {
-      fetchBook(true, false);
-    } else {
-      fetchBook(false, true);
-    }
+    fetchBook();
   }, []);
 
   const onOrderClicked = function (id: number) {
@@ -74,7 +56,8 @@ const BookPage = ({
       history.push('/order/' + id);
       setPage('order');
       setCurrentOrder(id);
-      onViewOrder();
+      setOrder(undefined);
+      setDelay(10000);
     } else {
       setOpenNoRobot(true);
     }
@@ -163,7 +146,7 @@ const BookPage = ({
             <Grid item>
               <DepthChart
                 orders={book.orders}
-                lastDayPremium={lastDayPremium}
+                lastDayPremium={info.last_day_nonkyc_btc_premium}
                 currency={fav.currency}
                 limits={limits.list}
                 maxWidth={chartWidthEm} // EM units
@@ -176,7 +159,7 @@ const BookPage = ({
         ) : view === 'depth' ? (
           <DepthChart
             orders={book.orders}
-            lastDayPremium={lastDayPremium}
+            lastDayPremium={info.last_day_nonkyc_btc_premium}
             currency={fav.currency}
             limits={limits.list}
             maxWidth={windowSize.width * 0.8} // EM units

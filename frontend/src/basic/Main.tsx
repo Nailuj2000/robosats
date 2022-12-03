@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { HashRouter, BrowserRouter, Switch, Route } from 'react-router-dom';
 import { useTheme, Box, Slide, Typography } from '@mui/material';
-import { AppContext } from '../contexts/AppContext';
+import { AppContext, AppContextProps } from '../contexts/AppContext';
 
 import UserGenPage from './UserGenPage';
 import MakerPage from './MakerPage';
@@ -12,7 +12,6 @@ import NavBar from './NavBar';
 import MainDialogs from './MainDialogs';
 
 import RobotAvatar from '../components/RobotAvatar';
-import { Settings } from '../models';
 
 import { useTranslation } from 'react-i18next';
 import Notifications from '../components/Notifications';
@@ -22,28 +21,13 @@ const Main = (): JSX.Element => {
   const theme = useTheme();
   const {
     settings,
-    setSettings,
     federation,
-    setFederation,
-    book,
-    fetchBook,
-    limits,
-    fetchLimits,
-    maker,
-    setMaker,
-    clearOrder,
     robot,
     setRobot,
     info,
     focusedCoordinator,
-    setFocusedCoordinator,
     baseUrl,
-    fav,
-    setFav,
     order,
-    setOrder,
-    badOrder,
-    setBadOrder,
     page,
     setPage,
     slideDirection,
@@ -55,7 +39,7 @@ const Main = (): JSX.Element => {
     open,
     setOpen,
     windowSize,
-  } = useContext(AppContext);
+  } = useContext<AppContextProps>(AppContext);
 
   const Router = window.NativeRobosats === undefined ? BrowserRouter : HashRouter;
   const basename = window.NativeRobosats === undefined ? '' : window.location.pathname;
@@ -127,27 +111,7 @@ const Main = (): JSX.Element => {
               appear={slideDirection.in != undefined}
             >
               <div>
-                <BookPage
-                  book={book}
-                  fetchBook={fetchBook}
-                  onViewOrder={() => {
-                    setOrder(undefined);
-                    setDelay(10000);
-                  }}
-                  limits={limits}
-                  fetchLimits={fetchLimits}
-                  fav={fav}
-                  setFav={setFav}
-                  maker={maker}
-                  setMaker={setMaker}
-                  clearOrder={clearOrder}
-                  lastDayPremium={info.last_day_nonkyc_btc_premium}
-                  windowSize={windowSize}
-                  hasRobot={robot.avatarLoaded}
-                  setPage={setPage}
-                  setCurrentOrder={setCurrentOrder}
-                  baseUrl={baseUrl}
-                />
+                <BookPage hasRobot={robot.avatarLoaded} />
               </div>
             </Slide>
           </Route>
@@ -159,21 +123,7 @@ const Main = (): JSX.Element => {
               appear={slideDirection.in != undefined}
             >
               <div>
-                <MakerPage
-                  book={book}
-                  limits={limits}
-                  fetchLimits={fetchLimits}
-                  maker={maker}
-                  setMaker={setMaker}
-                  clearOrder={clearOrder}
-                  setPage={setPage}
-                  setCurrentOrder={setCurrentOrder}
-                  fav={fav}
-                  setFav={setFav}
-                  windowSize={{ ...windowSize, height: windowSize.height - navbarHeight }}
-                  hasRobot={robot.avatarLoaded}
-                  baseUrl={baseUrl}
-                />
+                <MakerPage hasRobot={robot.avatarLoaded} />
               </div>
             </Slide>
           </Route>
@@ -188,17 +138,8 @@ const Main = (): JSX.Element => {
               >
                 <div>
                   <OrderPage
-                    baseUrl={baseUrl}
-                    order={order}
-                    settings={settings}
-                    setOrder={setOrder}
-                    setCurrentOrder={setCurrentOrder}
-                    badOrder={badOrder}
                     locationOrderId={props.match.params.orderId}
-                    setBadOrder={setBadOrder}
                     hasRobot={robot.avatarLoaded}
-                    windowSize={{ ...windowSize, height: windowSize.height - navbarHeight }}
-                    setPage={setPage}
                   />
                 </div>
               </Slide>
@@ -212,18 +153,7 @@ const Main = (): JSX.Element => {
               appear={slideDirection.in != undefined}
             >
               <div>
-                <SettingsPage
-                  fav={fav}
-                  setFav={setFav}
-                  settings={settings}
-                  federation={federation}
-                  setFederation={setFederation}
-                  setFocusedCoordinator={setFocusedCoordinator}
-                  setSettings={setSettings}
-                  openCoordinator={() => setOpen({ ...open, coordinator: true })}
-                  windowSize={{ ...windowSize, height: windowSize.height - navbarHeight }}
-                  baseUrl={baseUrl}
-                />
+                <SettingsPage />
               </div>
             </Slide>
           </Route>

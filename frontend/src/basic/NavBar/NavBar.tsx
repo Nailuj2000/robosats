@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
-import { Tabs, Tab, Paper, useTheme } from '@mui/material';
+import { Tabs, Tab, Paper, useTheme, useControlled } from '@mui/material';
 import MoreTooltip from './MoreTooltip';
 
 import { OpenDialogs } from '../MainDialogs';
@@ -17,44 +17,32 @@ import {
   MoreHoriz,
 } from '@mui/icons-material';
 import RobotAvatar from '../../components/RobotAvatar';
-
-type Direction = 'left' | 'right' | undefined;
+import { AppContext, AppContextProps } from '../../contexts/AppContext';
 
 interface NavBarProps {
-  page: Page;
   nickname?: string | null;
-  setPage: (state: Page) => void;
-  setSlideDirection: (state: { in: Direction; out: Direction }) => void;
-  width: number;
-  height: number;
-  open: OpenDialogs;
-  setOpen: (state: OpenDialogs) => void;
-  closeAll: OpenDialogs;
-  currentOrder: number | undefined;
   hasRobot: boolean;
-  baseUrl: string;
-  color: 'primary' | 'secondary';
 }
 
-const NavBar = ({
-  page,
-  setPage,
-  setSlideDirection,
-  open,
-  nickname = null,
-  setOpen,
-  closeAll,
-  width,
-  height,
-  currentOrder,
-  hasRobot = false,
-  baseUrl,
-  color,
-}: NavBarProps): JSX.Element => {
+const NavBar = ({ nickname = null, hasRobot = false }: NavBarProps): JSX.Element => {
   const theme = useTheme();
   const { t } = useTranslation();
+  const {
+    page,
+    setPage,
+    settings,
+    setSlideDirection,
+    open,
+    setOpen,
+    closeAll,
+    windowSize,
+    currentOrder,
+    navbarHeight,
+    baseUrl,
+  } = useContext<AppContextProps>(AppContext);
   const history = useHistory();
-  const smallBar = width < 50;
+  const smallBar = windowSize.width < 50;
+  const color = settings.network === 'mainnet' ? 'primary' : 'secondary';
 
   const tabSx = smallBar
     ? { position: 'relative', bottom: nickname ? '1em' : '0em', minWidth: '1em' }
@@ -96,7 +84,13 @@ const NavBar = ({
   return (
     <Paper
       elevation={6}
-      sx={{ height: `${height}em`, width: `100%`, position: 'fixed', bottom: 0, borderRadius: 0 }}
+      sx={{
+        height: `${navbarHeight}em`,
+        width: `100%`,
+        position: 'fixed',
+        bottom: 0,
+        borderRadius: 0,
+      }}
     >
       <Tabs
         TabIndicatorProps={{ sx: { height: '0.3em', position: 'absolute', top: 0 } }}
@@ -171,7 +165,7 @@ const NavBar = ({
             open.more ? null : setOpen({ ...open, more: true });
           }}
           icon={
-            <MoreTooltip open={open} nickname={nickname} setOpen={setOpen} closeAll={closeAll}>
+            <MoreTooltip>
               <MoreHoriz />
             </MoreTooltip>
           }

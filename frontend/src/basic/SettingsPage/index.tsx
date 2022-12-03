@@ -1,36 +1,23 @@
-import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { Grid, Paper, useTheme } from '@mui/material';
+import React, { useContext } from 'react';
+import { Grid, Paper } from '@mui/material';
 import SettingsForm from '../../components/SettingsForm';
 import FederationTable from '../../components/FederationTable';
-import { Coordinator, Settings, Favorites } from '../../models';
+import { AppContext, AppContextProps } from '../../contexts/AppContext';
 
-interface SettingsPageProps {
-  fav: Favorites;
-  setFav: (state: Favorites) => void;
-  settings: Settings;
-  setSettings: (state: Settings) => void;
-  windowSize: { width: number; height: number };
-  federation: Coordinator[];
-  setFederation: (state: Coordinator[]) => void;
-  setFocusedCoordinator: (state: number) => void;
-  openCoordinator: () => void;
-  baseUrl: string;
-}
-
-const SettingsPage = ({
-  fav,
-  setFav,
-  settings,
-  setSettings,
-  windowSize,
-  federation,
-  setFederation,
-  setFocusedCoordinator,
-  openCoordinator,
-  baseUrl,
-}: SettingsPageProps): JSX.Element => {
-  const { t } = useTranslation();
+const SettingsPage = (): JSX.Element => {
+  const {
+    fav,
+    setFav,
+    settings,
+    setSettings,
+    federation,
+    setFederation,
+    setFocusedCoordinator,
+    windowSize,
+    open,
+    setOpen,
+    baseUrl,
+  } = useContext<AppContextProps>(AppContext);
   const maxHeight = windowSize.height * 0.85 - 3;
 
   return (
@@ -48,7 +35,7 @@ const SettingsPage = ({
             federation={federation}
             setFederation={setFederation}
             setFocusedCoordinator={setFocusedCoordinator}
-            openCoordinator={openCoordinator}
+            openCoordinator={() => setOpen({ ...open, coordinator: true })}
             baseUrl={baseUrl}
             maxHeight={10}
             network={settings.network}

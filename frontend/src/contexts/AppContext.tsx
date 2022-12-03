@@ -17,7 +17,7 @@ import {
 } from '../models';
 
 import { apiClient } from '../services/api';
-import { checkVer, getHost } from '../utils';
+import { checkVer, getClientVersion, getHost } from '../utils';
 import { sha256 } from 'js-sha256';
 
 import defaultFederation from '../../static/federation.json';
@@ -62,18 +62,118 @@ interface SlideDirection {
 export interface AppContextProps {
   federation: Coordinator[];
   setFederation: (state: Coordinator[]) => void;
+  settings: Settings;
+  setSettings: (state: Settings) => void;
+  book: Book;
+  setBook: (state: Book) => void;
+  fetchBook: () => void;
+  limits: { list: LimitList; loading: boolean };
+  setLimits: (state: { list: LimitList; loading: boolean }) => void;
+  fetchLimits: () => void;
+  maker: Maker;
+  setMaker: (state: Maker) => void;
+  clearOrder: () => void;
+  robot: Robot;
+  setRobot: (state: Robot) => void;
+  info: Info;
+  setInfo: (state: Info) => void;
+  focusedCoordinator: number;
+  setFocusedCoordinator: (state: number) => void;
+  baseUrl: string;
+  setBaseUrl: (state: string) => void;
+  fav: Favorites;
+  setFav: (state: Favorites) => void;
+  order: Order | undefined;
+  setOrder: (state: Order | undefined) => void;
+  badOrder: string;
+  setBadOrder: (state: string | undefined) => void;
+  setDelay: (state: number) => void;
+  page: Page;
+  setPage: (state: Page) => void;
+  slideDirection: SlideDirection;
+  setSlideDirection: (state: SlideDirection) => void;
+  currentOrder: number | undefined;
+  setCurrentOrder: (state: number) => void;
+  navbarHeight: number;
+  closeAll: OpenDialogs;
+  open: OpenDialogs;
+  setOpen: (state: OpenDialogs) => void;
+  windowSize: { width: number; height: number };
+  clientVersion: {
+    semver: string[];
+    short: string;
+    long: string;
+  };
 }
+
+const entryPage: Page | '' =
+  window.NativeRobosats === undefined ? window.location.pathname.split('/')[1] : '';
+
+const closeAll = {
+  more: false,
+  learn: false,
+  community: false,
+  info: false,
+  coordinator: false,
+  exchange: false,
+  client: false,
+  update: false,
+  profile: false,
+};
+
+// export const initialState = {
+//   federation: defaultFederation,
+//   setFederation: () => null,
+//   settings: new Settings(),
+//   setSettings: () => null,
+//   book: { orders: [], loading: true },
+//   setBook: () => null,
+//   fetchBook: () => null,
+//   limits: {
+//     list: [],
+//     loading: true,
+//   },
+//   setLimits:() => null,
+//   fetchLimits: ()=> null,
+//   maker: defaultMaker,
+//   setMaker: () => null,
+//   clearOrder: () => null,
+//   robot: new Robot(),
+//   setRobot: () => null,
+//   info: defaultInfo,
+//   setInfo: () => null,
+//   focusedCoordinator: 0,
+//   setFocusedCoordinator: () => null,
+//   baseUrl: '',
+//   setBaseUrl: () => null,
+//   fav: { type: null, currency: 0 },
+//   setFav: () => null,
+//   order: undefined,
+//   setOrder: () => null,
+//   badOrder: '',
+//   setBadOrder: () => null,
+//   setDelay: () => null,
+//   page: entryPage == '' ? 'robot' : entryPage,
+//   setPage: () => null,
+//   slideDirection: {
+//     in: undefined,
+//     out: undefined,
+//   },
+//   setSlideDirection: () => null,
+//   currentOrder: undefined,
+//   setCurrentOrder: () => null,
+//   navbarHeight: 2.5,
+//   closeAll,
+//   open: closeAll,
+//   setOpen: () => null,
+//   windowSize: getWindowSize(14),
+// }
 
 export interface AppContextProviderProps {
   children: React.ReactNode;
   settings: Settings;
   setSettings: (state: Settings) => void;
 }
-
-export const initialAppContext: AppContextProps = {
-  federation: defaultFederation,
-  setFederation: (defaultFederation) => null,
-};
 
 export const AppContextProvider = ({
   children,
@@ -92,7 +192,10 @@ export const AppContextProvider = ({
   const [robot, setRobot] = useState<Robot>(new Robot());
   const [maker, setMaker] = useState<Maker>(defaultMaker);
   const [info, setInfo] = useState<Info>(defaultInfo);
-  const [federation, setFederation] = useState<Coordinator[]>(initialAppContext.federation);
+  const [federation, setFederation] = useState<Coordinator[]>(
+    defaultFederation.map((coor) => new Coordinator(coor)),
+  );
+  console.log(federation);
   const [focusedCoordinator, setFocusedCoordinator] = useState<number>(0);
   const [baseUrl, setBaseUrl] = useState<string>('');
   const [fav, setFav] = useState<Favorites>({ type: null, currency: 0 });
@@ -102,8 +205,6 @@ export const AppContextProvider = ({
   const [order, setOrder] = useState<Order | undefined>(undefined);
   const [badOrder, setBadOrder] = useState<string | undefined>(undefined);
 
-  const entryPage: Page | '' =
-    window.NativeRobosats === undefined ? window.location.pathname.split('/')[1] : '';
   const [page, setPage] = useState<Page>(entryPage == '' ? 'robot' : entryPage);
   const [slideDirection, setSlideDirection] = useState<SlideDirection>({
     in: undefined,
@@ -113,17 +214,8 @@ export const AppContextProvider = ({
   const [currentOrder, setCurrentOrder] = useState<number | undefined>(undefined);
 
   const navbarHeight = 2.5;
-  const closeAll = {
-    more: false,
-    learn: false,
-    community: false,
-    info: false,
-    coordinator: false,
-    exchange: false,
-    client: false,
-    update: false,
-    profile: false,
-  };
+  const clientVersion = getClientVersion();
+
   const [open, setOpen] = useState<OpenDialogs>(closeAll);
 
   const [windowSize, setWindowSize] = useState<{ width: number; height: number }>(
@@ -185,38 +277,23 @@ export const AppContextProvider = ({
     return await data;
   };
 
-  const fetchInfo = function (setNetwork?: boolean) {
+  const fetchInfo = function () {
+    apiClient.get(baseUrl, '/api/info/', { mode: 'no-cors' }).then((data: Info) => {
+      let info: Info;
+      const versionInfo: any = checkVer(data.version.major, data.version.minor, data.version.patch);
+      info = {
+        ...data,
+        openUpdateClient: versionInfo.updateAvailable,
+        coordinatorVersion: versionInfo.coordinatorVersion,
+        clientVersion: versionInfo.clientVersion,
+        loading: false,
+      };
+      setInfo(info);
+    });
+
     federation.map((coordinator, i) => {
       if (coordinator.enabled === true) {
-        const baseUrl = coordinator[`mainnetClearnet`];
-        apiClient
-          .get(baseUrl, '/api/info/', { mode: 'no-cors' })
-          .then((data: Info) => {
-            let info: Info;
-            const versionInfo: any = checkVer(
-              data.version.major,
-              data.version.minor,
-              data.version.patch,
-            );
-            info = {
-              ...data,
-              openUpdateClient: versionInfo.updateAvailable,
-              coordinatorVersion: versionInfo.coordinatorVersion,
-              clientVersion: versionInfo.clientVersion,
-              loading: false,
-            };
-            setInfo(info);
-            setFederation((federation) => {
-              federation[i].info = info;
-              return federation;
-            });
-          })
-          .finally(() => {
-            setFederation((federation) => {
-              federation[i].loadingInfo = false;
-              return federation;
-            });
-          });
+        coordinator.fetchInfo({ bitcoin: 'mainnet', network: 'Clearnet' });
       }
     });
   };
@@ -359,6 +436,7 @@ export const AppContextProvider = ({
         setOrder,
         badOrder,
         setBadOrder,
+        setDelay,
         page,
         setPage,
         slideDirection,
@@ -370,6 +448,7 @@ export const AppContextProvider = ({
         open,
         setOpen,
         windowSize,
+        clientVersion,
       }}
     >
       {children}
@@ -377,4 +456,4 @@ export const AppContextProvider = ({
   );
 };
 
-export const AppContext = React.createContext(initialAppContext);
+export const AppContext = React.createContext();

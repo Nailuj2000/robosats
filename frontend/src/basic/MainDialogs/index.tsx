@@ -1,5 +1,4 @@
-import React, { useEffect } from 'react';
-import { Coordinator, Info, Robot, Settings } from '../../models';
+import React, { useContext, useEffect } from 'react';
 import {
   CommunityDialog,
   ExchangeDialog,
@@ -11,6 +10,7 @@ import {
   UpdateClientDialog,
 } from '../../components/Dialogs';
 import { Page } from '../NavBar';
+import { AppContext, AppContextProps } from '../../contexts/AppContext';
 
 export interface OpenDialogs {
   more: boolean;
@@ -24,35 +24,22 @@ export interface OpenDialogs {
   profile: boolean; // temporary until new Robot Page is ready
 }
 
-interface MainDialogsProps {
-  open: OpenDialogs;
-  setOpen: (state: OpenDialogs) => void;
-  info: Info;
-  robot: Robot;
-  setRobot: (state: Robot) => void;
-  setPage: (state: Page) => void;
-  setCurrentOrder: (state: number) => void;
-  closeAll: OpenDialogs;
-  baseUrl: string;
-  network: 'mainnet' | 'testnet' | undefined;
-  federation: Coordinator[];
-  focusedCoordinator: number;
-}
+const MainDialogs = (): JSX.Element => {
+  const {
+    open,
+    setOpen,
+    info,
+    closeAll,
+    robot,
+    setRobot,
+    setPage,
+    setCurrentOrder,
+    settings,
+    federation,
+    focusedCoordinator,
+    baseUrl,
+  } = useContext<AppContextProps>(AppContext);
 
-const MainDialogs = ({
-  open,
-  setOpen,
-  info,
-  closeAll,
-  robot,
-  setRobot,
-  setPage,
-  setCurrentOrder,
-  baseUrl,
-  network,
-  federation,
-  focusedCoordinator,
-}: MainDialogsProps): JSX.Element => {
   useEffect(() => {
     if (info.openUpdateClient) {
       setOpen({ ...closeAll, update: true });
@@ -95,7 +82,7 @@ const MainDialogs = ({
       />
       <CoordinatorDialog
         open={open.coordinator}
-        network={network}
+        network={settings.network}
         onClose={() => setOpen({ ...open, coordinator: false })}
         coordinator={federation[focusedCoordinator]}
         baseUrl={baseUrl}
