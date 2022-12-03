@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, CircularProgress, Tooltip } from '@mui/material';
-import { TorIcon } from './Icons';
+import { TorIcon } from '../Icons';
 import { useTranslation } from 'react-i18next';
-import { gridQuickFilterValuesSelector } from '@mui/x-data-grid';
 
 interface Props {
   color: 'inherit' | 'error' | 'warning' | 'success' | 'primary' | 'secondary' | 'info' | undefined;

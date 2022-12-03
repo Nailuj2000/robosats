@@ -2,6 +2,7 @@ import React, { Suspense, useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import Main from './basic/Main';
 import { CssBaseline } from '@mui/material';
+import { AppContextProvider } from './contexts/AppContext';
 import { ThemeProvider, createTheme, Theme } from '@mui/material/styles';
 import UnsafeAlert from './components/UnsafeAlert';
 import TorConnection from './components/TorConnection';
@@ -42,13 +43,15 @@ const App = (): JSX.Element => {
     <Suspense fallback='loading language'>
       <I18nextProvider i18n={i18n}>
         <ThemeProvider theme={theme}>
-          <CssBaseline />
-          {window.NativeRobosats === undefined ? (
-            <UnsafeAlert settings={settings} setSettings={setSettings} />
-          ) : (
-            <TorConnection />
-          )}
-          <Main settings={settings} setSettings={setSettings} />
+          <AppContextProvider settings={settings} setSettings={setSettings}>
+            <CssBaseline />
+            {window.NativeRobosats === undefined ? (
+              <UnsafeAlert settings={settings} setSettings={setSettings} />
+            ) : (
+              <TorConnection />
+            )}
+            <Main />
+          </AppContextProvider>
         </ThemeProvider>
       </I18nextProvider>
     </Suspense>
