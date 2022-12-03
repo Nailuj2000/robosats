@@ -1,12 +1,10 @@
-import React from 'react';
-
+import React, { useContext } from 'react';
+import { AppContext, AppContextProps } from '../../contexts/AppContext';
 import { Settings } from '../../models';
-import { Paper, useTheme } from '@mui/material';
+import { Paper } from '@mui/material';
 import SettingsForm from '../../components/SettingsForm';
 
 interface SettingsWidgetProps {
-  settings: Settings;
-  setSettings: (state: Settings) => void;
   style?: Object;
   className?: string;
   onMouseDown?: () => void;
@@ -15,19 +13,8 @@ interface SettingsWidgetProps {
 }
 
 const SettingsWidget = React.forwardRef(
-  (
-    {
-      settings,
-      setSettings,
-      style,
-      className,
-      onMouseDown,
-      onMouseUp,
-      onTouchEnd,
-    }: SettingsWidgetProps,
-    ref,
-  ) => {
-    const theme = useTheme();
+  ({ style, className, onMouseDown, onMouseUp, onTouchEnd }: SettingsWidgetProps, ref) => {
+    const { settings, setSettings } = useContext<AppContextProps>(AppContext);
     return React.useMemo(() => {
       return (
         <Paper

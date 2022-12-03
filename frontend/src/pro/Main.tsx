@@ -1,20 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import GridLayout, { Layout } from 'react-grid-layout';
 import { Grid, styled, useTheme } from '@mui/material';
-import { apiClient } from '../services/api';
-import checkVer from '../utils/checkVer';
-
-import {
-  Book,
-  LimitList,
-  Maker,
-  Robot,
-  Info,
-  Settings,
-  Favorites,
-  defaultMaker,
-  defaultInfo,
-} from '../models';
 
 import {
   PlaceholderWidget,
@@ -22,25 +8,11 @@ import {
   BookWidget,
   DepthChartWidget,
   SettingsWidget,
+  FederationWidget,
 } from '../pro/Widgets';
 import ToolBar from '../pro/ToolBar';
 import LandingDialog from '../pro/LandingDialog';
-
-import defaultCoordinators from '../../static/federation.json';
-import { getHost } from '../utils';
-
-const getWindowSize = function (fontSize: number) {
-  // returns window size in EM units
-  return {
-    width: window.innerWidth / fontSize,
-    height: window.innerHeight / fontSize,
-  };
-};
-
-interface MainProps {
-  settings: Settings;
-  setSettings: (state: Settings) => void;
-}
+import { AppContext, AppContextProps } from '../contexts/AppContext';
 
 // To Do. Add dotted grid when layout is not frozen
 // ${freeze ?
@@ -57,8 +29,20 @@ const StyledRGL = styled(GridLayout)(
   `,
 );
 
-const Main = ({ settings, setSettings }: MainProps): JSX.Element => {
+const defaultLayout: Layout = [
+  { i: 'Maker', w: 10, h: 16, x: 67, y: 0, minW: 8, maxW: 22, minH: 10, maxH: 28 },
+  { i: 'Book', w: 43, h: 15, x: 34, y: 16, minW: 6, maxW: 70, minH: 9, maxH: 25 },
+  { i: 'DepthChart', w: 15, h: 10, x: 19, y: 16, minW: 6, maxW: 22, minH: 9, maxH: 25 },
+  { i: 'Garage', w: 52, h: 16, x: 0, y: 0, minW: 15, maxW: 78, minH: 8, maxH: 30 },
+  { i: 'History', w: 10, h: 10, x: 9, y: 16, minW: 6, maxW: 22, minH: 9, maxH: 25 },
+  { i: 'Trade', w: 15, h: 16, x: 52, y: 0, minW: 6, maxW: 22, minH: 9, maxH: 25 },
+  { i: 'Settings', w: 9, h: 15, x: 0, y: 16, minW: 6, maxW: 22, minH: 9, maxH: 25 },
+  { i: 'Federation', w: 25, h: 5, x: 9, y: 26, minW: 2, maxW: 50, minH: 4, maxH: 25 },
+];
+
+const Main = (): JSX.Element => {
   const theme = useTheme();
+<<<<<<< HEAD
   const em: number = theme.typography.fontSize;
   const toolbarHeight: number = 3;
   const gridCellSize: number = 2;
@@ -86,9 +70,12 @@ const Main = ({ settings, setSettings }: MainProps): JSX.Element => {
   const [coordinators, setCoordinators] = useState<Coordinator[]>(defaultCoordinators);
   const [fav, setFav] = useState<Favorites>({ type: null, currency: 0 });
   const [baseUrl, setBaseUrl] = useState<string>('');
+=======
+  const { settings, windowSize } = useContext<AppContextProps>(AppContext);
+>>>>>>> Fix PRO after AppContext refactor
   const [layout, setLayout] = useState<Layout>(defaultLayout);
-
   const [openLanding, setOpenLanding] = useState<boolean>(true);
+<<<<<<< HEAD
   const [windowSize, setWindowSize] = useState<{ width: number; height: number }>(
     getWindowSize(em),
   );
@@ -164,12 +151,17 @@ const Main = ({ settings, setSettings }: MainProps): JSX.Element => {
       });
     });
   };
+=======
 
-  console.log(layout);
+  const em: number = theme.typography.fontSize;
+  const toolbarHeight: number = 3;
+  const gridCellSize: number = 2;
+>>>>>>> Fix PRO after AppContext refactor
+
   return (
     <Grid container direction='column' sx={{ width: `${windowSize.width}em` }}>
       <Grid item>
-        <ToolBar height={`${toolbarHeight}em`} settings={settings} setSettings={setSettings} />
+        <ToolBar height={`${toolbarHeight}em`} />
         <LandingDialog open={openLanding} onClose={() => setOpenLanding(!openLanding)} />
       </Grid>
 
@@ -191,6 +183,7 @@ const Main = ({ settings, setSettings }: MainProps): JSX.Element => {
           onLayoutChange={(layout: Layout) => setLayout(layout)}
         >
           <div key='Maker'>
+<<<<<<< HEAD
             <MakerWidget
               baseUrl={baseUrl}
               limits={limits}
@@ -223,9 +216,18 @@ const Main = ({ settings, setSettings }: MainProps): JSX.Element => {
               currency={fav.currency}
               windowSize={windowSize}
             />
+=======
+            <MakerWidget />
+          </div>
+          <div key='Book'>
+            <BookWidget layout={layout[1]} gridCellSize={gridCellSize} />
+          </div>
+          <div key='DepthChart'>
+            <DepthChartWidget gridCellSize={gridCellSize} layout={layout[2]} />
+>>>>>>> Fix PRO after AppContext refactor
           </div>
           <div key='Settings'>
-            <SettingsWidget settings={settings} setSettings={setSettings} />
+            <SettingsWidget />
           </div>
           <div key='Garage'>
             <PlaceholderWidget label='Robot Garage' />
@@ -236,8 +238,8 @@ const Main = ({ settings, setSettings }: MainProps): JSX.Element => {
           <div key='Trade'>
             <PlaceholderWidget label='Trade Box' />
           </div>
-          <div key='Other'>
-            <PlaceholderWidget label='Other' />
+          <div key='Federation'>
+            <FederationWidget layout={layout[7]} gridCellSize={gridCellSize} />
           </div>
         </StyledRGL>
       </Grid>

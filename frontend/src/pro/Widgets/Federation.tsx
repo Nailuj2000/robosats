@@ -1,20 +1,20 @@
 import React, { useContext } from 'react';
 import { AppContext, AppContextProps } from '../../contexts/AppContext';
-import { Paper, useTheme } from '@mui/material';
-import DepthChart from '../../components/Charts/DepthChart';
+import { Paper } from '@mui/material';
+import { GridItem } from 'react-grid-layout';
+import FederationTable from '../../components/FederationTable';
 
-interface DepthChartWidgetProps {
-  layout: any;
+interface FederationWidgetProps {
+  layout: GridItem;
   gridCellSize: number;
   style?: Object;
   className?: string;
   onMouseDown?: () => void;
   onMouseUp?: () => void;
   onTouchEnd?: () => void;
-  baseUrl: string;
 }
 
-const DepthChartWidget = React.forwardRef(
+const FederationWidget = React.forwardRef(
   (
     {
       layout,
@@ -24,29 +24,27 @@ const DepthChartWidget = React.forwardRef(
       onMouseDown,
       onMouseUp,
       onTouchEnd,
-    }: DepthChartWidgetProps,
+    }: FederationWidgetProps,
     ref,
   ) => {
-    const { book, fav, limits, info, baseUrl } = useContext<AppContextProps>(AppContext);
+    const { federation, setFederation, setFocusedCoordinator, open, setOpen, baseUrl } =
+      useContext<AppContextProps>(AppContext);
     return React.useMemo(() => {
       return (
         <Paper elevation={3} style={{ width: '100%', height: '100%' }}>
-          <DepthChart
+          <FederationTable
+            federation={federation}
+            setFederation={setFederation}
+            setFocusedCoordinator={setFocusedCoordinator}
+            openCoordinator={() => setOpen({ ...open, coordinator: true })}
             baseUrl={baseUrl}
-            elevation={0}
-            orders={book.orders}
-            currency={fav.currency}
-            limits={limits.list}
             maxWidth={layout.w * gridCellSize} // EM units
             maxHeight={layout.h * gridCellSize} // EM units
-            fillContainer={true}
-            lastDayPremium={info.last_day_nonkyc_btc_premium}
-            baseUrl={baseUrl}
           />
         </Paper>
       );
-    }, [fav.currency, book.orders, limits.list, layout]);
+    }, [federation]);
   },
 );
 
-export default DepthChartWidget;
+export default FederationWidget;

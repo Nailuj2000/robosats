@@ -1,18 +1,12 @@
-import React from 'react';
-
-import { Book, Favorites } from '../../models';
+import React, { useContext } from 'react';
+import { AppContext, AppContextProps } from '../../contexts/AppContext';
 import { Paper, useTheme } from '@mui/material';
 import BookTable from '../../components/BookTable';
+import { GridItem } from 'react-grid-layout';
 
 interface BookWidgetProps {
-  baseUrl: string;
-  layout: any;
+  layout: GridItem;
   gridCellSize?: number;
-  book: Book;
-  fetchBook: () => void;
-  fav: Favorites;
-  setFav: (state: Favorites) => void;
-  windowSize: { width: number; height: number };
   style?: Object;
   className?: string;
   onMouseDown?: () => void;
@@ -26,11 +20,6 @@ const BookWidget = React.forwardRef(
       layout,
       baseUrl,
       gridCellSize = 2,
-      book,
-      fetchBook,
-      fav,
-      setFav,
-      windowSize,
       style,
       className,
       onMouseDown,
@@ -40,13 +29,15 @@ const BookWidget = React.forwardRef(
     ref,
   ) => {
     const theme = useTheme();
+    const { book, fetchBook, fav, setFav, windowSize, baseUrl } =
+      useContext<AppContextProps>(AppContext);
     return React.useMemo(() => {
       return (
         <Paper elevation={3} style={{ width: '100%', height: '100%' }}>
           <BookTable
             baseUrl={baseUrl}
             elevation={0}
-            clickRefresh={() => fetchBook()}
+            fetchBook={fetchBook}
             book={book}
             fav={fav}
             fillContainer={true}
@@ -57,6 +48,7 @@ const BookWidget = React.forwardRef(
             defaultFullscreen={false}
             onCurrencyChange={(e) => setFav({ ...fav, currency: e.target.value })}
             onTypeChange={(mouseEvent, val) => setFav({ ...fav, type: val })}
+            baseUrl={baseUrl}
           />
         </Paper>
       );

@@ -30,7 +30,7 @@ import RobotAvatar from '../RobotAvatar';
 import { Fullscreen, FullscreenExit, Refresh } from '@mui/icons-material';
 
 interface BookTableProps {
-  clickRefresh?: () => void;
+  fetchBook?: () => void;
   book: Book;
   fav?: Favorites;
   maxWidth: number;
@@ -49,7 +49,7 @@ interface BookTableProps {
 }
 
 const BookTable = ({
-  clickRefresh,
+  fetchBook,
   book,
   fav = { currency: 1, type: 0, mode: 'fiat' },
   setFav,
@@ -643,7 +643,7 @@ const BookTable = ({
               </IconButton>
             </Grid>
             <Grid item xs={6}>
-              <IconButton onClick={clickRefresh}>
+              <IconButton onClick={fetchBook}>
                 <Refresh />
               </IconButton>
             </Grid>

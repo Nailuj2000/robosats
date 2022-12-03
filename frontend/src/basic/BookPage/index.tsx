@@ -130,7 +130,7 @@ const BookPage = ({ hasRobot = false }: BookPageProps): JSX.Element => {
           >
             <Grid item>
               <BookTable
-                clickRefresh={() => fetchBook()}
+                fetchBook={fetchBook}
                 book={book}
                 fav={fav}
                 setFav={setFav}
@@ -170,7 +170,7 @@ const BookPage = ({ hasRobot = false }: BookPageProps): JSX.Element => {
         ) : (
           <BookTable
             book={book}
-            clickRefresh={() => fetchBook()}
+            fetchBook={fetchBook}
             fav={fav}
             setFav={setFav}
             maxWidth={windowSize.width * 0.97} // EM units
