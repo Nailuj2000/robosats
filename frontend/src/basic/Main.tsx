@@ -176,20 +176,7 @@ const Main = (): JSX.Element => {
           baseUrl={baseUrl}
         />
       </div>
-      <MainDialogs
-        open={open}
-        setOpen={setOpen}
-        setRobot={setRobot}
-        setPage={setPage}
-        setCurrentOrder={setCurrentOrder}
-        info={info}
-        robot={robot}
-        closeAll={closeAll}
-        baseUrl={baseUrl}
-        federation={federation}
-        focusedCoordinator={focusedCoordinator}
-        network={settings.network}
-      />
+      <MainDialogs />
     </Router>
   );
 };

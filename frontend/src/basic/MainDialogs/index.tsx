@@ -36,22 +36,16 @@ const MainDialogs = (): JSX.Element => {
     setCurrentOrder,
     settings,
     federation,
+    clientVersion,
     focusedCoordinator,
     baseUrl,
   } = useContext<AppContextProps>(AppContext);
 
-  useEffect(() => {
-    if (info.openUpdateClient) {
-      setOpen({ ...closeAll, update: true });
-    }
-  }, [info]);
-
   return (
     <>
       <UpdateClientDialog
-        open={open.update}
-        coordinatorVersion={info.coordinatorVersion}
-        clientVersion={info.clientVersion}
+        coordinatorVersion={info.version}
+        clientVersion={clientVersion.semver}
         onClose={() => setOpen({ ...open, update: false })}
       />
       <AboutDialog
