@@ -1,8 +1,8 @@
 import Robot from './Robot.model';
 import Settings from './Settings.default.basic';
 import Coordinator from './Coordinator.model';
-import ExchangeInfo from './ExchangeInfo.model';
-export { Robot, Settings, Coordinator, ExchangeInfo };
+import Exchange from './Exchange.model';
+export { Robot, Settings, Coordinator, Exchange };
 
 export type { LimitList, Limit } from './Limit.model';
 export type { Maker } from './Maker.model';

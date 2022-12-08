@@ -7,7 +7,7 @@ import {
   LearnDialog,
   ProfileDialog,
   ClientDialog,
-  UpdateClientDialog,
+  UpdateDialog,
 } from '../../components/Dialogs';
 import { Page } from '../NavBar';
 import { AppContext, AppContextProps } from '../../contexts/AppContext';
@@ -43,32 +43,25 @@ const MainDialogs = (): JSX.Element => {
 
   return (
     <>
-      <UpdateClientDialog
+      <UpdateDialog
         coordinatorVersion={info.version}
         clientVersion={clientVersion.semver}
-        onClose={() => setOpen({ ...open, update: false })}
+        onClose={() => setOpen(closeAll)}
       />
-      <AboutDialog
-        open={open.info}
-        maxAmount='4,000,000'
-        onClose={() => setOpen({ ...open, info: false })}
-      />
+      <AboutDialog open={open.info} maxAmount='5,000,000' onClose={() => setOpen(closeAll)} />
       <LearnDialog open={open.learn} onClose={() => setOpen({ ...open, learn: false })} />
-      <CommunityDialog
-        open={open.community}
-        onClose={() => setOpen({ ...open, community: false })}
-      />
+      <CommunityDialog open={open.community} onClose={() => setOpen(closeAll)} />
       <ExchangeDialog
         federation={federation}
         open={open.exchange}
-        onClose={() => setOpen({ ...open, exchange: false })}
+        onClose={() => setOpen(closeAll)}
         info={info}
       />
       <ClientDialog open={open.client} onClose={() => setOpen({ ...open, client: false })} />
       <ProfileDialog
         open={open.profile}
         baseUrl={baseUrl}
-        onClose={() => setOpen({ ...open, profile: false })}
+        onClose={() => setOpen(closeAll)}
         robot={robot}
         setRobot={setRobot}
         setPage={setPage}
@@ -77,7 +70,7 @@ const MainDialogs = (): JSX.Element => {
       <CoordinatorDialog
         open={open.coordinator}
         network={settings.network}
-        onClose={() => setOpen({ ...open, coordinator: false })}
+        onClose={() => setOpen(closeAll)}
         coordinator={federation[focusedCoordinator]}
         baseUrl={baseUrl}
       />

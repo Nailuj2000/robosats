@@ -12,7 +12,7 @@ import {
   Favorites,
   defaultMaker,
   Coordinator,
-  ExchangeInfo,
+  Exchange,
   Order,
   Version,
 } from '../models';
@@ -76,8 +76,8 @@ export interface AppContextProps {
   clearOrder: () => void;
   robot: Robot;
   setRobot: (state: Robot) => void;
-  info: ExchangeInfo;
-  setInfo: (state: Info) => void;
+  exchange: Exchange;
+  setExchange: (state: Exchange) => void;
   focusedCoordinator: number;
   setFocusedCoordinator: (state: number) => void;
   baseUrl: string;
@@ -141,8 +141,8 @@ const closeAll = {
 //   clearOrder: () => null,
 //   robot: new Robot(),
 //   setRobot: () => null,
-//   info: defaultInfo,
-//   setInfo: () => null,
+//   info: defaultExchange,
+//   setExchange: () => null,
 //   focusedCoordinator: 0,
 //   setFocusedCoordinator: () => null,
 //   baseUrl: '',
@@ -192,7 +192,7 @@ export const AppContextProvider = ({
 
   const [robot, setRobot] = useState<Robot>(new Robot());
   const [maker, setMaker] = useState<Maker>(defaultMaker);
-  const [info, setInfo] = useState<ExchangeInfo>(new ExchangeInfo());
+  const [exchange, setExchange] = useState<Exchange>(new Exchange());
   const [federation, setFederation] = useState<Coordinator[]>(
     defaultFederation.map((c) => new Coordinator(c)),
   );
@@ -271,26 +271,27 @@ export const AppContextProvider = ({
     );
   };
 
-  const fetchLimits = async () => {
-    setLimits({ ...limits, loading: true });
-    const data = apiClient.get(baseUrl, '/api/limits/').then((data) => {
-      setLimits({ list: data ?? [], loading: false });
-      return data;
+  const fetchLimits = function () {
+    federation.map((coordinator, i) => {
+      if (coordinator.enabled === true) {
+        coordinator.fetchLimits({ bitcoin: 'mainnet', network: 'Clearnet' }, ()=>setFederation((f)=>{return f}));
+      }
     });
-    return await data;
   };
 
   const fetchInfo = function () {
     federation.map((coordinator, i) => {
       if (coordinator.enabled === true) {
-        coordinator.fetchInfo({ bitcoin: 'mainnet', network: 'Clearnet' }, setFederation);
+        coordinator.fetchInfo({ bitcoin: 'mainnet', network: 'Clearnet' }, ()=>setFederation((f)=>{return f}));
       }
     });
   };
 
   useEffect(() => {
-    info.update(federation, setInfo);
-  }, [federation]);
+    exchange.updateInfo(federation, () => setExchange((i)=> {return i}));
+    exchange.updateLimits(federation, () => setExchange((i)=> {return i}));
+    //exchange.updateBook(federation, () => setExchange((i)=> {return i}));
+  })//, [federation]);
 
   useEffect(() => {
     if (open.exchange) {
@@ -422,8 +423,8 @@ export const AppContextProvider = ({
         clearOrder,
         robot,
         setRobot,
-        info,
-        setInfo,
+        exchange,
+        setExchange,
         focusedCoordinator,
         setFocusedCoordinator,
         baseUrl,
