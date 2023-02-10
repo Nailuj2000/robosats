@@ -199,7 +199,7 @@ export const AppContextProvider = ({
   console.log(federation);
   const [focusedCoordinator, setFocusedCoordinator] = useState<number>(0);
   const [baseUrl, setBaseUrl] = useState<string>('');
-  const [fav, setFav] = useState<Favorites>({ type: null, currency: 0 });
+  const [fav, setFav] = useState<Favorites>({ type: null, currency: 0, mode: 'fiat' });
 
   const [delay, setDelay] = useState<number>(60000);
   const [timer, setTimer] = useState<NodeJS.Timer | undefined>(() =>
@@ -274,7 +274,11 @@ export const AppContextProvider = ({
   const fetchLimits = function () {
     federation.map((coordinator, i) => {
       if (coordinator.enabled === true) {
-        coordinator.fetchLimits({ bitcoin: 'mainnet', network: 'Clearnet' }, ()=>setFederation((f)=>{return f}));
+        coordinator.fetchLimits({ bitcoin: 'mainnet', network: 'Clearnet' }, () =>
+          setFederation((f) => {
+            return f;
+          }),
+        );
       }
     });
   };
@@ -282,16 +286,28 @@ export const AppContextProvider = ({
   const fetchInfo = function () {
     federation.map((coordinator, i) => {
       if (coordinator.enabled === true) {
-        coordinator.fetchInfo({ bitcoin: 'mainnet', network: 'Clearnet' }, ()=>setFederation((f)=>{return f}));
+        coordinator.fetchInfo({ bitcoin: 'mainnet', network: 'Clearnet' }, () =>
+          setFederation((f) => {
+            return f;
+          }),
+        );
       }
     });
   };
 
   useEffect(() => {
-    exchange.updateInfo(federation, () => setExchange((i)=> {return i}));
-    exchange.updateLimits(federation, () => setExchange((i)=> {return i}));
+    exchange.updateInfo(federation, () =>
+      setExchange((i) => {
+        return i;
+      }),
+    );
+    exchange.updateLimits(federation, () =>
+      setExchange((i) => {
+        return i;
+      }),
+    );
     //exchange.updateBook(federation, () => setExchange((i)=> {return i}));
-  })//, [federation]);
+  }); //, [federation]);
 
   useEffect(() => {
     if (open.exchange) {

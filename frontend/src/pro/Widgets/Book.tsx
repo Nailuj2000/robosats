@@ -18,7 +18,6 @@ const BookWidget = React.forwardRef(
   (
     {
       layout,
-      baseUrl,
       gridCellSize = 2,
       style,
       className,

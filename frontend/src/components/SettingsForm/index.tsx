@@ -37,18 +37,13 @@ interface SettingsFormProps {
   setSettings: (state: Settings) => void;
 }
 
-<<<<<<< HEAD
 const SettingsForm = ({
-  dense = false,
   fav,
   setFav,
+  dense = false,
   settings,
   setSettings,
-  showNetwork = false,
 }: SettingsFormProps): JSX.Element => {
-=======
-const SettingsForm = ({ dense = false, settings, setSettings }: SettingsFormProps): JSX.Element => {
->>>>>>> Add coordinator table and coordinator summary dialog
   const theme = useTheme();
   const { t } = useTranslation();
   const fontSizes = [
@@ -150,7 +145,6 @@ const SettingsForm = ({ dense = false, settings, setSettings }: SettingsFormProp
             />
           </ListItem>
 
-          
           <ListItem>
             <ListItemIcon>
               <AccountBalance />

@@ -24,11 +24,7 @@ const SettingsPage = (): JSX.Element => {
     <Paper elevation={12} sx={{ padding: '1em', maxHeight: `${maxHeight}em`, overflow: 'auto' }}>
       <Grid container direction='column' alignItems='flex-start' spacing={1}>
         <Grid item>
-          <SettingsForm 
-            fav={fav}
-            setFav={setFav}
-            settings={settings}
-            setSettings={setSettings} />
+          <SettingsForm fav={fav} setFav={setFav} settings={settings} setSettings={setSettings} />
         </Grid>
         <Grid item>
           <FederationTable

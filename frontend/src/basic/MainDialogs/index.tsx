@@ -39,12 +39,13 @@ const MainDialogs = (): JSX.Element => {
     clientVersion,
     focusedCoordinator,
     baseUrl,
+    exchange,
   } = useContext<AppContextProps>(AppContext);
 
   return (
     <>
       <UpdateDialog
-        coordinatorVersion={info.version}
+        coordinatorVersion={exchange.info.version}
         clientVersion={clientVersion.semver}
         onClose={() => setOpen(closeAll)}
       />

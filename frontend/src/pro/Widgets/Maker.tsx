@@ -1,7 +1,6 @@
 import React, { useContext } from 'react';
 
 import MakerForm from '../../components/MakerForm';
-import { LimitList, Maker, Favorites } from '../../models';
 import { Paper } from '@mui/material';
 import { AppContext, AppContextProps } from '../../contexts/AppContext';
 
@@ -14,29 +13,9 @@ interface MakerWidgetProps {
 }
 
 const MakerWidget = React.forwardRef(
-<<<<<<< HEAD
-  (
-    {
-      maker,
-      setMaker,
-      limits,
-      fetchLimits,
-      fav,
-      setFav,
-      baseUrl,
-      style,
-      className,
-      onMouseDown,
-      onMouseUp,
-      onTouchEnd,
-    }: MakerWidgetProps,
-    ref,
-  ) => {
-=======
   ({ style, className, onMouseDown, onMouseUp, onTouchEnd }: MakerWidgetProps, ref) => {
     const { limits, fetchLimits, maker, setMaker, fav, setFav, baseUrl } =
       useContext<AppContextProps>(AppContext);
->>>>>>> Fix PRO after AppContext refactor
     return React.useMemo(() => {
       return (
         <Paper
